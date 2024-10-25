@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Element Information Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; }
+        .result { border: 1px solid #ccc; padding: 10px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Element Information Generator</h1>
+        <input type="text" id="elementSymbol" placeholder="Enter Element Symbol (e.g., H, He, Li)">
+        <button onclick="generateInfo()">Generate Info</button>
+        <div class="result" id="result"></div>
+    </div>
+    <script>
+        const elements = {
+            H: { config: "1s1", orbital: "|↑ |", block: "s", group: 1, period: 1, valence: "1s1", protons: 1, mass: 1.008 },
+            He: { config: "1s2", orbital: "|↑↓|", block: "s", group: 18, period: 1, valence: "1s2", protons: 2, mass: 4.0026 },
+            Li: { config: "1s2 2s1", orbital: "|↑↓| |↑ |", block: "s", group: 1, period: 2, valence: "2s1", protons: 3, mass: 6.94 },
+            Be: { config: "1s2 2s2", orbital: "|↑↓| |↑↓|", block: "s", group: 2, period: 2, valence: "2s2", protons: 4, mass: 9.0122 },
+            B: { config: "1s2 2s2 2p1", orbital: "|↑↓| |↑↓| |↑ |", block: "p", group: 13, period: 2, valence: "2s2 2p1", protons: 5, mass: 10.81 },
+            C: { config: "1s2 2s2 2p2", orbital: "|↑↓| |↑↓| |↑ |↑ |", block: "p", group: 14, period: 2, valence: "2s2 2p2", protons: 6, mass: 12.011 },
+            N: { config: "1s2 2s2 2p3", orbital: "|↑↓| |↑↓| |↑ |↑ |↑ |", block: "p", group: 15, period: 2, valence: "2s2 2p3", protons: 7, mass: 14.007 },
+            O: { config: "1s2 2s2 2p4", orbital: "|↑↓| |↑↓| |↑↓|↑ |↑ |", block: "p", group: 16, period: 2, valence: "2s2 2p4", protons: 8, mass: 15.999 },
+            F: { config: "1s2 2s2 2p5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑ |", block: "p", group: 17, period: 2, valence: "2s2 2p5", protons: 9, mass: 18.998 },
+            Ne: { config: "1s2 2s2 2p6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓|", block: "p", group: 18, period: 2, valence: "2s2 2p6", protons: 10, mass: 20.180 },
+            Na: { config: "1s2 2s2 2p6 3s1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑ |", block: "s", group: 1, period: 3, valence: "3s1", protons: 11, mass: 22.990 },
+            Mg: { config: "1s2 2s2 2p6 3s2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓|", block: "s", group: 2, period: 3, valence: "3s2", protons: 12, mass: 24.305 },
+            Al: { config: "1s2 2s2 2p6 3s2 3p1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |", block: "p", group: 13, period: 3, valence: "3s2 3p1", protons: 13, mass: 26.982 },
+            Si: { config: "1s2 2s2 2p6 3s2 3p2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "p", group: 14, period: 3, valence: "3s2 3p2", protons: 14, mass: 28.085 },
+            P: { config: "1s2 2s2 2p6 3s2 3p3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "p", group: 15, period: 3, valence: "3s2 3p3", protons: 15, mass: 30.974 },
+            S: { config: "1s2 2s2 2p6 3s2 3p4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑ |↑ |", block: "p", group: 16, period: 3, valence: "3s2 3p4", protons: 16, mass: 32.06 },
+            Cl: { config: "1s2 2s2 2p6 3s2 3p5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑↓|↑ |", block: "p", group: 17, period: 3, valence: "3s2 3p5", protons: 17, mass: 35.45 },
+            Ar: { config: "1s2 2s2 2p6 3s2 3p6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑↓|↑↓|", block: "p", group: 18, period: 3, valence: "3s2 3p6", protons: 18, mass: 39.948 },
+            K: { config: "1s2 2s2 2p6 3s2 3p6 4s1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑ |", block: "s", group: 1, period: 4, valence: "4s1", protons: 19, mass: 39.098 },
+            Ca: { config: "1s2 2s2 2p6 3s2 3p6 4s2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓|", block: "s", group: 2, period: 4, valence: "4s2", protons: 20, mass: 40.078 },
+            Sc: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |", block: "d", group: 3, period: 4, valence: "4s2 3d1", protons: 21, mass: 44.956 },
+            Ti: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 4, period: 4, valence: "4s2 3d2", protons: 22, mass: 47.867 },
+            V: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 5, period: 4, valence: "4s2 3d3", protons: 23, mass: 50.941 },
+            Cr: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 6, period: 4, valence: "4s2 3d5", protons: 24, mass: 51.996 },
+            Mn: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 7, period: 4, valence: "4s2 3d5", protons: 25, mass: 54.938 },
+            Fe: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 8, period: 4, valence: "4s2 3d6", protons: 26, mass: 55.845 },
+            Co: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d7", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 9, period: 4, valence: "4s2 3d7", protons: 27, mass: 58.933 },
+            Ni: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d8", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 10, period: 4, valence: "4s2 3d8", protons: 28, mass: 58.693 },
+            Cu: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 11, period: 4, valence: "4s2 3d10", protons: 29, mass: 63.546 },
+            Zn: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 12, period: 4, valence: "4s2 3d10", protons: 30, mass: 65.38 },
+            Ga: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ | |↑ |", block: "p", group: 13, period: 4, valence: "4s2 3d10 4p1", protons: 31, mass: 69.723 },
+            Ge: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "p", group: 14, period: 4, valence: "4s2 3d10 4p2", protons: 32, mass: 72.63 },
+            As: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "p", group: 15, period: 4, valence: "4s2 3d10 4p3", protons: 33, mass: 74.921 },
+            Se: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑ |", block: "p", group: 16, period: 4, valence: "4s2 3d10 4p4", protons: 34, mass: 78.971 },
+            Br: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑↓|", block: "p", group: 17, period: 4, valence: "4s2 3d10 4p5", protons: 35, mass: 79.904 },
+            Kr: { config: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑↓|", block: "p", group: 18, period: 4, valence: "4s2 3d10 4p6", protons: 36, mass: 83.798 },
+            Rb: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑ |", block: "s", group: 1, period: 5, valence: "5s1", protons: 37, mass: 85.468 },
+            Sr: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓|", block: "s", group: 2, period: 5, valence: "5s2", protons: 38, mass: 87.62 },
+            Y: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |", block: "d", group: 3, period: 5, valence: "5s2 4d1", protons: 39, mass: 88.905 },
+            Zr: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 4, period: 5, valence: "5s2 4d2", protons: 40, mass: 91.224 },
+            Nb: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 5, period: 5, valence: "5s2 4d4", protons: 41, mass: 92.906 },
+            Mo: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 6, period: 5, valence: "5s2 4d5", protons: 42, mass: 95.95 },
+            Tc: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 7, period: 5, valence: "5s2 4d5", protons: 43, mass: 98 },
+            Ru: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d7", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 8, period: 5, valence: "5s2 4d7", protons: 44, mass: 101.07 },
+            Rh: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d8", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 9, period: 5, valence: "5s2 4d8", protons: 45, mass: 102.91 },
+            Pd: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 10, period: 5, valence: "5s2 4d10", protons: 46, mass: 106.42 },
+            Ag: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 11, period: 5, valence: "5s2 4d10", protons: 47, mass: 107.87 },
+            Cd: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 12, period: 5, valence: "5s2 4d10", protons: 48, mass: 112.41 },
+            In: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10 5p1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ | |↑ |", block: "p", group: 13, period: 5, valence: "5s2 4d10 5p1", protons: 49, mass: 114.82 },
+            Sn: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10 5p2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "p", group: 14, period: 5, valence: "5s2 4d10 5p2", protons: 50, mass: 118.71 },
+            Sb: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10 5p3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "p", group: 15, period: 5, valence: "5s2 4d10 5p3", protons: 51, mass: 121.76 },
+            Te: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10 5p4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑ |", block: "p", group: 16, period: 5, valence: "5s2 4d10 5p4", protons: 52, mass: 127.6 },
+            I: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10 5p5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑↓|", block: "p", group: 17, period: 5, valence: "5s2 4d10 5p5", protons: 53, mass: 126.9 },
+            Xe: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 4d10 5p6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑↓|↑↓|", block: "p", group: 18, period: 5, valence: "5s2 4d10 5p6", protons: 54, mass: 131.29 },
+            Cs: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑ |", block: "s", group: 1, period: 6, valence: "6s1", protons: 55, mass: 132.91 },
+            Ba: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓|", block: "s", group: 2, period: 6, valence: "6s2", protons: 56, mass: 137.33 },
+            La: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |", block: "d", group: 3, period: 6, valence: "6s2 5d1", protons: 57, mass: 138.91 },
+            Ce: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |", block: "d", group: 4, period: 6, valence: "6s2 5d1", protons: 58, mass: 140.12 },
+            Pr: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 5, period: 6, valence: "6s2 5d3", protons: 59, mass: 140.91 },
+            Nd: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 6, period: 6, valence: "6s2 5d4", protons: 60, mass: 144.24 },
+            Pm: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 7, period: 6, valence: "6s2 5d5", protons: 61, mass: 145 },
+            Sm: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 8, period: 6, valence: "6s2 5d6", protons: 62, mass: 150.36 },
+            Eu: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 9, period: 6, valence: "6s2 5d6", protons: 63, mass: 151.96 },
+            Gd: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d7", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 10, period: 6, valence: "6s2 5d7", protons: 64, mass: 157.25 },
+            Tb: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d8", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 11, period: 6, valence: "6s2 5d8", protons: 65, mass: 158.93 },
+            Dy: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d9", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 12, period: 6, valence: "6s2 5d9", protons: 66, mass: 162.5 },
+            Ho: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 13, period: 6, valence: "6s2 5d10", protons: 67, mass: 164.93 },
+            Er: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 14, period: 6, valence: "6s2 5d10", protons: 68, mass: 167.26 },
+            Tm: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 15, period: 6, valence: "6s2 5d10", protons: 69, mass: 168.93 },
+            Yb: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 16, period: 6, valence: "6s2 5d10", protons: 70, mass: 173.04 },
+            Lu: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |↑ |", block: "d", group: 17, period: 6, valence: "6s2 5d10", protons: 71, mass: 174.97 },
+            Hf: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 4, period: 6, valence: "6s2 5d2", protons: 72, mass: 178.49 },
+            Rf: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 5, period: 6, valence: "6s2 5d3", protons: 104, mass: 267.5 },
+            Db: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 6, period: 6, valence: "6s2 5d4", protons: 105, mass: 268.1 },
+            Sg: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 7, period: 6, valence: "6s2 5d5", protons: 106, mass: 271.3 },
+            Bh: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d6", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 8, period: 6, valence: "6s2 5d6", protons: 107, mass: 270.3 },
+            Hs: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d7", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 9, period: 6, valence: "6s2 5d7", protons: 108, mass: 277 },
+            Mt: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d8", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 10, period: 6, valence: "6s2 5d8", protons: 109, mass: 276.2 },
+            Ds: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d9", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 11, period: 6, valence: "6s2 5d9", protons: 110, mass: 281.5 },
+            Rg: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 5d10", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 12, period: 6, valence: "6s2 5d10", protons: 111, mass: 282.3 },
+            Cn: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑ |", block: "s", group: 13, period: 7, valence: "7s1", protons: 112, mass: 285.4 },
+            Nh: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓|", block: "s", group: 14, period: 7, valence: "7s2", protons: 113, mass: 286.2 },
+            Fl: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s2 6d1", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |", block: "d", group: 3, period: 7, valence: "7s2 6d1", protons: 114, mass: 289.2 },
+            Mc: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s2 6d2", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 4, period: 7, valence: "7s2 6d2", protons: 115, mass: 290.2 },
+            Lv: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s2 6d3", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 5, period: 7, valence: "7s2 6d3", protons: 116, mass: 293.3 },
+            Ts: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s2 6d4", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 6, period: 7, valence: "7s2 6d4", protons: 117, mass: 294.2 },
+            Og: { config: "1s2 2s2 2p6 3s2 3p6 4s2 5s2 6s2 7s2 6d5", orbital: "|↑↓| |↑↓| |↑↓|↑↓|↑↓| |↑↓| |↑ |↑ |", block: "d", group: 7, period: 7, valence: "7s2 6d5", protons: 118, mass: 294.2 },
+        };
+    
+        function generateInfo() {
+            const symbol = document.getElementById('elementSymbol').value.trim();
+            const element = elements[symbol];
+            const resultDiv = document.getElementById('result');
+            if (element) {
+                resultDiv.innerHTML = `
+                    <h3>${symbol}</h3>
+                    <p><strong>Configuration:</strong> ${element.config}</p>
+                    <p><strong>Orbital:</strong> ${element.orbital}</p>
+                    <p><strong>Block:</strong> ${element.block}</p>
+                    <p><strong>Group:</strong> ${element.group}</p>
+                    <p><strong>Period:</strong> ${element.period}</p>
+                    <p><strong>Valence Electrons:</strong> ${element.valence}</p>
+                    <p><strong>Protons:</strong> ${element.protons}</p>
+                    <p><strong>Atomic Mass:</strong> ${element.mass}</p>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p style="color: red;">Element not found. Please check the symbol.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
